@@ -1,0 +1,23 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Your Model City</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+<body>
+    <div id="app">
+      <h1>Your Model City</h1>
+
+      <label for="grid-size">Grid Size: <span id="grid-size-value">32</span> × <span id="grid-size-value-2">32</span></label>
+      <input type="range" id="grid-size" min="8" max="64" value="32" />
+
+      <div id="color-picker"></div>
+      <div id="grid"></div>
+      <button id="export-btn">Export JSON</button>
+    </div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
+
