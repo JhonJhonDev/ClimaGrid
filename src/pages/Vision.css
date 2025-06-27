@@ -1,0 +1,54 @@
+:root {
+  --vision-text-primary: #ffffff;
+  --font-body: 'IBM Plex Mono', monospace;
+  --font-heading: 'Playfair Display', serif;
+}
+
+.vision-container {
+  min-height: 100vh;
+  background: url('/vision-bg.jpg') no-repeat center center/cover;
+  color: var(--vision-text-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.vision-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+.navbar, .vision-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+}
+
+.vision-content {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.vision-quote {
+  font-family: var(--font-heading);
+  font-size: 3.5rem;
+  font-style: italic;
+  font-weight: 700;
+  line-height: 1.4;
+  max-width: 800px;
+  margin: 0;
+  border-left: 5px solid #FFD700;
+  padding-left: 2rem;
+}

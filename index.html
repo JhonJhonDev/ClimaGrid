@@ -1,23 +1,17 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Your Model City</title>
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ClimaGrid</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=IBM+Plex+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Create and design your own model city with an interactive grid-based builder" />
   </head>
-<body>
-    <div id="app">
-      <h1>Your Model City</h1>
-
-      <label for="grid-size">Grid Size: <span id="grid-size-value">32</span> × <span id="grid-size-value-2">32</span></label>
-      <input type="range" id="grid-size" min="8" max="64" value="32" />
-
-      <div id="color-picker"></div>
-      <div id="grid"></div>
-      <button id="export-btn">Export JSON</button>
-    </div>
-  <script type="module" src="/src/main.ts"></script>
-</body>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
 </html>
-
