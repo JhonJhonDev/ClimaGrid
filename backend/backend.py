@@ -11,6 +11,8 @@ def evaluate():
         print("Received evaluation data:")
         grid_size = data.get('gridSize')
         grid = data.get('grid')
+        longitude = int(data.get('longitude'))
+        latitude = int(data.get('latitude'))
         evaluation = data.get('evaluation')
         flat = []
         for i in range(grid_size):
@@ -18,7 +20,8 @@ def evaluate():
             for j in range(grid_size):
                 temp.append(grid[i][j]["type"])
             flat.append(temp)
-        print(flat)
+        print(longitude)
+        print(latitude)
         return jsonify({
             "message": "Evaluation received successfully!",
             "score": evaluation.get('score') if evaluation else None

@@ -16,6 +16,22 @@ const COLORS = [
   { name: 'g', color: '#22c55e' },
 ];
 
+const typeconverter: Record<string, string> = {
+  'Low Density Building': 'l',
+  'High Density Building': 'd',
+  'Water': 'b',
+  'Green Spaces': 'g',
+  'Empty Land': 'e',
+};
+
+const CODE_TO_TYPE: Record<string, string> = {
+  l: 'Low Density Building',
+  d: 'High Density Building',
+  b: 'Water',
+  g: 'Green Spaces',
+  e: 'Empty Land',
+};
+
 interface GridCell {
   color: string;
   type: string;
@@ -32,7 +48,7 @@ const Builder: React.FC = () => {
   const [isDrawing, setIsDrawing] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [longitude, setLongitude] = useState('');
-      const [latitude, setLatitude] = useState('');
+  const [latitude, setLatitude] = useState('');
   const [metrics, setMetrics] = useState<Record<string, number>>({});
   const [quote, setQuote] = useState('');
 
@@ -50,15 +66,12 @@ const Builder: React.FC = () => {
     };
     const totalCells = gridSize * gridSize;
 
-    grid.forEach(row => {
-      row.forEach(cell => {
-        if (cell.type === 'empty') {
-          newMetrics['Empty Land']++;
-        } else if (newMetrics.hasOwnProperty(cell.type)) {
-          newMetrics[cell.type]++;
-        }
-      });
-    });
+        grid.forEach(row => {
+          row.forEach(cell => {
+            const fullType = CODE_TO_TYPE[cell.type] || 'Empty Land';
+            newMetrics[fullType]++;
+          });
+        });
 
     for (const key in newMetrics) {
       newMetrics[key] = (newMetrics[key] / totalCells) * 100;
@@ -102,10 +115,16 @@ const Builder: React.FC = () => {
     setIsEvaluating(true);
 
     await new Promise(resolve => setTimeout(resolve, 3000));
-
+    if (!longitude || !latitude) {
+        alert('Please enter both longitude and latitude before submitting.');
+        setIsEvaluating(false); // Reset UI state
+        return;
+    }
     const payload = {
       gridSize,
       grid,
+      longitude,
+      latitude,
       timestamp: new Date().toISOString(),
       evaluation: {
         status: 'complete',
@@ -177,13 +196,13 @@ const Builder: React.FC = () => {
               <div key={name} className="metric-item">
                 <span className="metric-label">{name}</span>
                 <div className="metric-bar-container">
-                  <div
-                    className="metric-bar"
-                    style={{
-                      width: `${percentage}%`,
-                      backgroundColor: COLORS.find(c => c.name === name)?.color || '#888',
-                    }}
-                  ></div>
+                    <div
+                      className="metric-bar"
+                      style={{
+                        width: `${percentage}%`,
+                        backgroundColor: COLORS.find(c => c.name === typeconverter[name])?.color || '#888',
+                      }}
+                    ></div>
                 </div>
                 <span className="metric-value">{percentage.toFixed(1)}%</span>
               </div>
@@ -223,19 +242,6 @@ const Builder: React.FC = () => {
               ))}
             </div>
           </div>
-          <div className="sidebar-section actions">
-            <h3 className="sidebar-title">Actions</h3>
-            <button
-              onClick={evaluateDesign}
-              className="action-button evaluate"
-              disabled={isEvaluating}
-            >
-              {isEvaluating ? <span className="loading-spinner"></span> : 'Evaluate Design'}
-            </button>
-            <button onClick={clearGrid} className="action-button secondary">
-              Clear Grid
-            </button>
-          </div>
           <div className="sidebar-section">
             <h3 className="sidebar-title">Coordinates</h3>
             <div className="coordinates-group">
@@ -254,6 +260,19 @@ const Builder: React.FC = () => {
                 className="coordinate-input"
               />
             </div>
+          </div>
+          <div className="sidebar-section actions">
+            <h3 className="sidebar-title">Actions</h3>
+            <button
+              onClick={evaluateDesign}
+              className="action-button evaluate"
+              disabled={isEvaluating}
+            >
+              {isEvaluating ? <span className="loading-spinner"></span> : 'Evaluate Design'}
+            </button>
+            <button onClick={clearGrid} className="action-button secondary">
+              Clear Grid
+            </button>
           </div>
         </aside>
       </div>
