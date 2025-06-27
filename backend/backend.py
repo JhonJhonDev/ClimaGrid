@@ -9,12 +9,16 @@ def evaluate():
     try:
         data = request.get_json() 
         print("Received evaluation data:")
-        print(data)
-
         grid_size = data.get('gridSize')
         grid = data.get('grid')
         evaluation = data.get('evaluation')
-
+        flat = []
+        for i in range(grid_size):
+            temp = []
+            for j in range(grid_size):
+                temp.append(grid[i][j]["type"])
+            flat.append(temp)
+        print(flat)
         return jsonify({
             "message": "Evaluation received successfully!",
             "score": evaluation.get('score') if evaluation else None

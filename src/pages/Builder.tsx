@@ -10,10 +10,10 @@ const quotes = [
 ];
 
 const COLORS = [
-  { name: 'Low Density Building', color: '#d1d5db' },
-  { name: 'High Density Building', color: '#4b5563' },
-  { name: 'Water', color: '#3b82f6' },
-  { name: 'Green Spaces', color: '#22c55e' },
+  { name: 'l', color: '#d1d5db' },
+  { name: 'd', color: '#4b5563' },
+  { name: 'b', color: '#3b82f6' },
+  { name: 'g', color: '#22c55e' },
 ];
 
 interface GridCell {
@@ -101,34 +101,38 @@ const Builder: React.FC = () => {
   const evaluateDesign = async () => {
     setIsEvaluating(true);
 
-    // Simulate evaluation process
     await new Promise(resolve => setTimeout(resolve, 3000));
 
-    // Create and download the JSON file
-    const data = JSON.stringify({
+    const payload = {
       gridSize,
       grid,
       timestamp: new Date().toISOString(),
       evaluation: {
         status: 'complete',
-        score: Math.floor(Math.random() * 100) + 1, // Random score for now
+        score: Math.floor(Math.random() * 100) + 1,
         analysis: 'City design evaluated successfully'
       }
-    }, null, 2);
+    };
 
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `city-evaluation-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      const response = await fetch('http://localhost:5000/api/evaluate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)  // stringify only once
+      });
 
-    setIsEvaluating(false);
+      if (!response.ok) {
+        throw new Error('Failed to send evaluation');
+      }
 
-    // Show completion message
-    alert('City evaluation complete! Your design has been analyzed and downloaded.');
-  };
+      const result = await response.json();
+      console.log('Server responded with:', result);
+    } catch (error) {
+      console.error('Error sending to backend:', error);
+    }
+      };
 
   const clearGrid = () => {
     setGrid(Array(gridSize).fill(null).map(() =>
