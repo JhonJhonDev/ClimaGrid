@@ -1,0 +1,8 @@
+year = "2016" # replace this with input for year
+url = "https://ds.nccs.nasa.gov/thredds/dodsC/AMES/NEX/GDDP-CMIP6/ACCESS-CM2/ssp245/r1i1p1f1/tasmax/tasmax_day_ACCESS-CM2_ssp245_r1i1p1f1_gn_" + year +".nc"
+dstm = xr.open_dataset(url)
+tasmax_c = ds['tasmax']-273.15 # this is your xarray for surface temp lmk if you need help traversing
+print(tasmax_c)
+url2 = "https://ds.nccs.nasa.gov/thredds/dodsC/AMES/NEX/GDDP-CMIP6/ACCESS-CM2/ssp245/r1i1p1f1/pr/pr_day_ACCESS-CM2_ssp245_r1i1p1f1_gn_" + year +".nc"
+dspr = xr.open_dataset(url) # this is your xarray for precipitation rate lmk if you need help traversing
+print(dspr)
