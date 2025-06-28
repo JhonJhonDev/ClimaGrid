@@ -64,31 +64,6 @@ export default function ResultsPage() {
 
   return (
   <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center' }}>
-    <div>
-      <h2 style={{ color: '#ccc' }}>Heatmap</h2>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
-          aspectRatio: '1 / 1',
-          width: '100%',
-          maxWidth: '90vmin',
-          gap: '0px'
-        }}
-      >
-        {grid.flat().map((cell, idx) => (
-          <div
-            key={idx}
-            style={{
-              width: '100%',
-              aspectRatio: '1 / 1',
-              backgroundColor: cell.color,
-              boxSizing: 'border-box'
-          }}
-        />
-      ))}
-    </div>
-    </div>
 
     <div>
       <h2 style={{ color: '#ccc' }}>Original Map</h2>
@@ -114,6 +89,31 @@ export default function ResultsPage() {
           />
         ))}
       </div>
+    </div>
+    <div>
+      <h2 style={{ color: '#ccc' }}>Heatmap</h2>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+          aspectRatio: '1 / 1',
+          width: '100%',
+          maxWidth: '90vmin',
+          gap: '0px'
+        }}
+      >
+        {grid.flat().map((cell, idx) => (
+          <div
+            key={idx}
+            style={{
+              width: '100%',
+              aspectRatio: '1 / 1',
+              backgroundColor: cell.color,
+              boxSizing: 'border-box'
+          }}
+        />
+      ))}
+    </div>
     </div>
   </div>
   );

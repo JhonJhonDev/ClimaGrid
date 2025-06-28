@@ -43,6 +43,8 @@ def simheat(grid, airtemp, steps=75, alpha=0.01, beta = 0.01, hot = True):
 
                 new_output[y, x] = center + alpha * laplacian - beta * (center - airtemp)
         output = new_output
+    maxtemp = output.max()
+    mintemp = output.min()
     difarray = np.full((height, width), airtemp, dtype=float)
     output = output - difarray
     output = output * 125 + 125
@@ -62,8 +64,7 @@ def simheat(grid, airtemp, steps=75, alpha=0.01, beta = 0.01, hot = True):
     image = np.frombuffer(canvas.tostring_argb(), dtype=np.uint8).reshape((height, width, 4)).tolist()
     rgb_pixels = [[tuple(pixel[1:4]) for pixel in row] for row in image]
     plt.close(fig)
-    print(rgb_pixels)
-    return rgb_pixels
+    return (rgb_pixels,(maxtemp,mintemp))
 #result = simheat(test, airtemp=5,hot = False)
 #plt.imshow(result)
 #plt.axis('off')
