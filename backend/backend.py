@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
+from heat import simheat 
 app = Flask(__name__)
 CORS(app) 
 
@@ -20,13 +20,14 @@ def evaluate():
             for j in range(grid_size):
                 temp.append(grid[i][j]["type"])
             flat.append(temp)
-        print(longitude)
-        print(latitude)
+        flat = simheat(flat,airtemp = 20)
+        print(flat[0])
         return jsonify({
-            "message": "Evaluation received successfully!",
-            "score": evaluation.get('score') if evaluation else None
+            "message": "True",
+            "score": evaluation.get('score') if evaluation else None,
+            "heatmap": flat 
         }), 200
-
+        
     except Exception as e:
         print("Error processing evaluation:", str(e))
         return jsonify({"error": "Invalid request"}), 400

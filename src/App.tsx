@@ -4,6 +4,7 @@ import Landing from './pages/Landing';
 import Builder from './pages/Builder';
 import Vision from './pages/Vision';
 import About from './pages/About';
+import Results from './pages/Results';
 import Preloader from './components/Preloader/Preloader';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
             <Route path="/builder" element={<Builder />} />
             <Route path="/vision" element={<Vision />} />
             <Route path="/about" element={<About />} />
+            <Route path="/results" element={<Results />} />
           </Routes>
         </Router>
       )}

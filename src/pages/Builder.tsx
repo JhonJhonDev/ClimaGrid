@@ -1,4 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import './Builder.css';
 
 const quotes = [
@@ -49,13 +51,14 @@ const Builder: React.FC = () => {
   const [isEvaluating, setIsEvaluating] = useState(false);
   const [longitude, setLongitude] = useState('');
   const [latitude, setLatitude] = useState('');
+  const [year, setyear] = useState('');
   const [metrics, setMetrics] = useState<Record<string, number>>({});
   const [quote, setQuote] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     setQuote(quotes[Math.floor(Math.random() * quotes.length)]);
   }, []);
-
   useEffect(() => {
     const newMetrics: Record<string, number> = {
       'Low Density Building': 0,
@@ -115,9 +118,25 @@ const Builder: React.FC = () => {
     setIsEvaluating(true);
 
     await new Promise(resolve => setTimeout(resolve, 3000));
-    if (!longitude || !latitude) {
-        alert('Please enter both longitude and latitude before submitting.');
-        setIsEvaluating(false); // Reset UI state
+    const lon = parseFloat(longitude);
+    const lat = parseFloat(latitude);
+    const yr = parseInt(year, 10);
+
+    if (isNaN(lon) || lon < -180 || lon > 180) {
+      alert('Please enter a valid longitude between -180 and 180');
+      setIsEvaluating(false);
+      return;
+    }
+
+    if (isNaN(lat) || lat < -90 || lat > 90) {
+      alert('Please enter a valid latitude between -90 and 90');
+      setIsEvaluating(false);
+      return;
+    }
+
+    if (isNaN(yr) || yr < 2016 || yr > 2100) {
+        alert('Please enter a valid year.');
+        setIsEvaluating(false);
         return;
     }
     const payload = {
@@ -143,15 +162,20 @@ const Builder: React.FC = () => {
       });
 
       if (!response.ok) {
+        setIsEvaluating(false);
         throw new Error('Failed to send evaluation');
       }
 
       const result = await response.json();
       console.log('Server responded with:', result);
+      setIsEvaluating(false);
+      navigate('/results', { state: result }); 
     } catch (error) {
       console.error('Error sending to backend:', error);
+      setIsEvaluating(false);
     }
-      };
+    return;
+    };
 
   const clearGrid = () => {
     setGrid(Array(gridSize).fill(null).map(() =>
@@ -243,20 +267,27 @@ const Builder: React.FC = () => {
             </div>
           </div>
           <div className="sidebar-section">
-            <h3 className="sidebar-title">Coordinates</h3>
+            <h3 className="sidebar-title">Information</h3>
             <div className="coordinates-group">
               <input
                 type="text"
-                placeholder="Longitude"
+                placeholder="Longitude: -180 to 180"
                 value={longitude}
                 onChange={(e) => setLongitude(e.target.value)}
                 className="coordinate-input"
               />
               <input
                 type="text"
-                placeholder="Latitude"
+                placeholder="Latitude: -90 to 90"
                 value={latitude}
                 onChange={(e) => setLatitude(e.target.value)}
+                className="coordinate-input"
+              />
+              <input
+                type="text"
+                placeholder="Year: 2016 to 2100"
+                value={year}
+                onChange={(e) => setyear(e.target.value)}
                 className="coordinate-input"
               />
             </div>
