@@ -1,22 +1,23 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-test = [
-    ['b','b','b','d','d','g','g','b','b','b'],
-    ['b','b','b','d','g','g','g','b','b','b'],
-    ['b','b','b','g','g','g','b','b','b','b'],
-    ['l','b','b','g','g','b','b','b','b','b'],
-    ['d','d','g','g','b','b','b','b','b','l'],
-    ['d','g','g','b','b','b','b','b','l','l'],
-    ['g','g','b','b','b','b','b','l','l','l'],
-    ['g','b','b','b','b','b','l','l','l','b'],
-    ['b','b','b','b','b','l','l','l','l','b'],
-    ['b','b','b','b','l','l','l','b','b','b']
-]
+#test = [
+#   ['d','d','d','d','d','g','g','b','d','d'],
+#   ['d','d','d','d','d','g','g','b','d','d'],
+#    ['d','d','d','d','d','g','b','b','b','b'],
+#    ['d','d','d','d','d','b','b','b','b','b'],
+#    ['d','d','g','g','d','b','b','b','b','l'],
+#   ['d','d','g','b','d','d','d','d','l','l'],
+#    ['g','d','d','b','d','b','b','l','l','l'],
+#    ['d','d','d','b','d','b','l','l','d','d'],
+#   ['d','d','d','b','d','l','l','d','d','d'],
+#    ['d','d','d','b','d','l','l','d','d','d']
+#]
 
 trans = {'l': 1, 'd': 1.5, 'b': -1.5, 'g': -1}
 
-def simheat(grid, airtemp, steps=200, alpha=0.01, beta = 0.01): 
+def simheat(grid, airtemp, steps=150, alpha=0.01, beta = 0.01): 
     height = len(grid)
     width = len(grid[0])
     
@@ -42,12 +43,21 @@ def simheat(grid, airtemp, steps=200, alpha=0.01, beta = 0.01):
 
                 new_output[y, x] = center + alpha * laplacian - beta * (center - airtemp)
         output = new_output
-
-    return output
-result = simheat(test, airtemp=5)
-
-plt.imshow(result, cmap='hot', interpolation='nearest')
-plt.colorbar(label='Temperature')
-plt.title('Simulated Heat Map')
-plt.show()
-
+    difarray = np.full((height, width), airtemp, dtype=float)
+    output = output - difarray
+    output = output * 125 + 125
+    fig, ax = plt.subplots()
+    cax = ax.imshow(output, cmap='inferno', interpolation='nearest', vmin=0, vmax=255)
+    ax.axis('off')  # turn off axes
+    canvas = FigureCanvas(fig)
+    canvas.draw()
+    width, height = canvas.get_width_height()
+    image = np.frombuffer(canvas.tostring_argb(), dtype=np.uint8).reshape((height, width, 4))
+    rgb_pixels = [[tuple(pixel[1:4]) for pixel in row] for row in image]
+    plt.close(fig)
+    return rgb_pixels
+#result = simheat(test, airtemp=5)
+#plt.imshow(result)
+#plt.axis('off')
+#plt.title("Reconstructed RGB Image")
+#plt.show()
