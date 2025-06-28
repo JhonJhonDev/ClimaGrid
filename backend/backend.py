@@ -20,12 +20,13 @@ def evaluate():
             for j in range(grid_size):
                 temp.append(grid[i][j]["type"])
             flat.append(temp)
-        flat = simheat(flat,airtemp = 20)
+        flatsim = simheat(flat,airtemp = 20)
         print(flat[0])
         return jsonify({
             "message": "True",
             "score": evaluation.get('score') if evaluation else None,
-            "heatmap": flat 
+            "orgmap" : flat,
+            "heatmap": flatsim 
         }), 200
         
     except Exception as e:

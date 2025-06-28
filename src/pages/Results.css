@@ -1,0 +1,28 @@
+.grid-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  background-color: #1a1a1a;
+  border-radius: 1rem;
+  padding: 1rem;
+  border: 1px solid #333;
+}
+
+.grid {
+  display: grid;
+  width: 700px;
+  height: 700px;
+  gap: 1px;
+  background-color: #333;
+  border: 1px solid #444;
+}
+
+.grid-cell {
+  background-color: #1f2937;
+  cursor: crosshair;
+  transition: background-color 0.2s ease;
+}
+
