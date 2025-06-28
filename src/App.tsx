@@ -8,10 +8,11 @@ import Results from './pages/Results';
 import Preloader from './components/Preloader/Preloader';
 
 function App() {
-  const [showPreloader, setShowPreloader] = useState(true);
+  const [showPreloader, setShowPreloader] = useState(!sessionStorage.getItem('hasSeenPreloader'));
   const [isFading, setIsFading] = useState(false);
 
   const handleAnimationComplete = () => {
+    sessionStorage.setItem('hasSeenPreloader', 'true');
     setIsFading(true);
     setTimeout(() => {
       setShowPreloader(false);
