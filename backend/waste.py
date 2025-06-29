@@ -1,18 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+
 def wastemaker(grid, temp,
                baseline_temp=15,
                normaltrashperson=1.2,
                temp_coeff=0.015):
-    trasharea = {'d':500, 'l':50, 'g':0, 'b':0} #dict for amt of trash per area type
+    trasharea = {'d':500, 'l':50, 'g':0, 'b':0} 
     R, C = len(grid), len(grid[0])
     waste = [[0.0]*C for _ in range(R)]
     
     for i in range(R):
         for j in range(C):
             p = trasharea[grid[i][j]]
-            # adjust per-person waste by temperature delta
             per_person = normaltrashperson * (
                 1 + temp_coeff*(temp[i][j] - baseline_temp)
             )
@@ -64,7 +65,6 @@ def ca_step(grid, waste, coeffs):
     return new_waste
 
 def run_ca_final(grid, temp, steps=10):
-    # default flow coefficients
     coeffs = {
         'h_overflow': 0.1,
         'h_to_water': 0.05,
@@ -75,40 +75,36 @@ def run_ca_final(grid, temp, steps=10):
     w = wastemaker(grid, temp)
     for _ in range(steps):
         w = ca_step(grid, w, coeffs)
-    return w
+    w = np.array(w)
+    fig, ax = plt.subplots()
+    height, width = w.shape
+    fig = plt.figure(figsize=(width / 100, height / 100), dpi=100)
+    ax = fig.add_axes([0, 0, 1, 1]) 
+    ax.imshow(w, cmap='YlOrBr', interpolation='nearest')
+    ax.axis('off') 
+    canvas = FigureCanvas(fig)
+    canvas.draw()
+    image = np.frombuffer(canvas.tostring_argb(), dtype=np.uint8).reshape((height, width, 4))
+    rgb_pixels = [[[int(pixel[1]), int(pixel[2]), int(pixel[3])] for pixel in row] for row in image]
+    plt.close(fig)
+    return (rgb_pixels,w)
 
-if __name__=='__main__':
-    land = [
+land = [
         ['d','l','g','b'],
         ['l','d','g','b'],
         ['g','g','l','d'],
         ['b','b','d','l']
     ]
-    temperature = [
+temperature = [
         [10,12,15,16],
         [20,18,15,14],
         [15,15,17,19],
         [13,14,16,20]
     ]
-    final_waste = run_ca_final(land, temperature, steps=10)
-    for row in final_waste:
-        print(["{:.2f}".format(x) for x in row])
-waste_arr = np.array(final_waste)
+#result = run_ca_final(land, temperature)
+#print(result[0])
+#plt.imshow(result[0])
+#plt.axis('off')
+#plt.title("Reconstructed RGB Image")
+#plt.show()
 
-
-cmap = plt.get_cmap('YlOrBr')
-
-fig, ax = plt.subplots(figsize=(6, 4))
-ax.axis('off')
-cax = ax.imshow(waste_arr,
-                cmap=cmap,
-                interpolation='nearest')
-
-
-# labels
-
-
-# colorssssss
-
-plt.tight_layout()
-plt.show()
