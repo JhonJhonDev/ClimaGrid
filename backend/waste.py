@@ -1,20 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from copy import deepcopy
-
-def init_waste(grid, temp,
+def wastemaker(grid, temp,
                baseline_temp=15,
-               base_waste_per_person=1.2,
+               normaltrashperson=1.2,
                temp_coeff=0.015):
-    pop_map = {'d':500, 'l':50, 'g':0, 'b':0}
+    trasharea = {'d':500, 'l':50, 'g':0, 'b':0} #dict for amt of trash per area type
     R, C = len(grid), len(grid[0])
     waste = [[0.0]*C for _ in range(R)]
     
     for i in range(R):
         for j in range(C):
-            p = pop_map[grid[i][j]]
+            p = trasharea[grid[i][j]]
             # adjust per-person waste by temperature delta
-            per_person = base_waste_per_person * (
+            per_person = normaltrashperson * (
                 1 + temp_coeff*(temp[i][j] - baseline_temp)
             )
             waste[i][j] = p * per_person
@@ -73,7 +72,7 @@ def run_ca_final(grid, temp, steps=10):
         'g_to_water': 0.10,
         'w_to_land': 0.01
     }
-    w = init_waste(grid, temp)
+    w = wastemaker(grid, temp)
     for _ in range(steps):
         w = ca_step(grid, w, coeffs)
     return w
