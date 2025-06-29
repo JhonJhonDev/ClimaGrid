@@ -18,6 +18,7 @@ def evaluate():
         grid = data.get('grid')
         longitude = int(data.get('longitude'))
         latitude = int(data.get('latitude'))
+        year = str(data.get('yr'))
         evaluation = data.get('evaluation')
         flat = []
         for i in range(grid_size):
@@ -26,15 +27,17 @@ def evaluate():
                 temp.append(grid[i][j]["type"])
             flat.append(temp)
         url = "https://ds.nccs.nasa.gov/thredds/dodsC/AMES/NEX/GDDP-CMIP6/ACCESS-CM2/ssp245/r1i1p1f1/tasmax/tasmax_day_ACCESS-CM2_ssp245_r1i1p1f1_gn_" + str(year) +".nc"
-        dstm = xr.open_dataset(url)
+        dstm = xr.open_dataset(url,engine='netcdf4' )
         tasmax_c = dstm['tasmax']-273.15
         value = tasmax_c.sel(lat=latitude, lon=longitude, method='nearest')
         airtemp = value.max(dim="time")
+        airtemp = airtemp.item()
         
         flatsim = simheat(flat,airtemp)
         
         # Calculate energy usage heatmap and statistics
         energy_heatmap, energy_stats = calculate_energy_usage(flat)
+        print(airtemp)
         
         return jsonify({
             "message": "True",

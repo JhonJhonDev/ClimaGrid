@@ -142,6 +142,7 @@ const Builder: React.FC = () => {
     const payload = {
       gridSize,
       grid,
+      yr,
       longitude,
       latitude,
       timestamp: new Date().toISOString(),

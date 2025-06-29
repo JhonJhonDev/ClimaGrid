@@ -6,11 +6,6 @@ def init_waste(grid, temp,
                baseline_temp=15,
                base_waste_per_person=1.2,
                temp_coeff=0.015):
-    """
-    Initialize per-cell waste (kg/day).
-      grid: 2D list of chars in {'b','g','l','d'}
-      temp: 2D list of same shape with °C values
-    """
     pop_map = {'d':500, 'l':50, 'g':0, 'b':0}
     R, C = len(grid), len(grid[0])
     waste = [[0.0]*C for _ in range(R)]
@@ -26,15 +21,6 @@ def init_waste(grid, temp,
     return waste
 
 def ca_step(grid, waste, coeffs):
-    """
-    One CA step updating waste by 4-neigh flows.
-      coeffs: dict with keys
-        h_overflow: d→l overflow fraction of diff
-        h_to_water: housing→water fraction of cell waste
-        h_to_green: housing→green fraction
-        g_to_water: green→water fraction
-        w_to_land: water→land fraction
-    """
     R, C = len(grid), len(grid[0])
     delta = [[0.0]*C for _ in range(R)]
     nbrs = [(-1,0),(1,0),(0,-1),(0,1)]
@@ -47,7 +33,6 @@ def ca_step(grid, waste, coeffs):
                 if not (0 <= ni < R and 0 <= nj < C): continue
                 neigh_type = grid[ni][nj]
                 
-                # 1) Overflow from dense→light
                 if grid[i][j]=='d' and neigh_type=='l':
                     diff = w0 - waste[ni][nj]
                     if diff>0:
@@ -55,39 +40,31 @@ def ca_step(grid, waste, coeffs):
                         delta[i][j]   -= flow
                         delta[ni][nj] += flow
                 
-                # 2) Runoff from housing into water
                 if grid[i][j] in ('d','l') and neigh_type=='b':
                     flow = w0 * coeffs['h_to_water']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
                 
-                # 3) Pollution from housing into green
                 if grid[i][j] in ('d','l') and neigh_type=='g':
                     flow = w0 * coeffs['h_to_green']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
                 
-                # 4) Runoff from green into water
                 if grid[i][j]=='g' and neigh_type=='b':
                     flow = w0 * coeffs['g_to_water']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
                 
-                # 5) Waste from water back to land
                 if grid[i][j]=='b' and neigh_type in ('g','l','d'):
                     flow = w0 * coeffs['w_to_land']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
 
-    # apply all net flows
     new_waste = [[waste[i][j] + delta[i][j] for j in range(C)]
                  for i in range(R)]
     return new_waste
 
 def run_ca_final(grid, temp, steps=10):
-    """
-    Initialize waste, run CA for `steps`, and return final waste grid.
-    """
     # default flow coefficients
     coeffs = {
         'h_overflow': 0.1,
@@ -101,7 +78,6 @@ def run_ca_final(grid, temp, steps=10):
         w = ca_step(grid, w, coeffs)
     return w
 
-# — Example usage —
 if __name__=='__main__':
     land = [
         ['d','l','g','b'],
