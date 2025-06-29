@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from heat import simheat 
+from heat import simheat
+from energy import calculate_energy_usage
 app = Flask(__name__)
-CORS(app) 
+CORS(app)
 
 @app.route('/api/evaluate', methods=['POST'])
 def evaluate():
@@ -22,12 +23,17 @@ def evaluate():
             flat.append(temp)
         flatsim = simheat(flat,airtemp = 20)
         
+        # Calculate energy usage heatmap and statistics
+        energy_heatmap, energy_stats = calculate_energy_usage(flat)
+        
         return jsonify({
             "message": "True",
             "score": evaluation.get('score') if evaluation else None,
             "orgmap" : flat,
             "heatmap": flatsim[0],
-            "heattemps":flatsim[1]
+            "heattemps":flatsim[1],
+            "energy_heatmap": energy_heatmap,
+            "energy_stats": energy_stats
         }), 200
         
     except Exception as e:

@@ -61,10 +61,11 @@ def simheat(grid, airtemp, steps=75, alpha=0.01, beta = 0.01, hot = True):
     ax.axis('off') 
     canvas = FigureCanvas(fig)
     canvas.draw()
-    image = np.frombuffer(canvas.tostring_argb(), dtype=np.uint8).reshape((height, width, 4)).tolist()
-    rgb_pixels = [[tuple(pixel[1:4]) for pixel in row] for row in image]
+    image = np.frombuffer(canvas.tostring_argb(), dtype=np.uint8).reshape((height, width, 4))
+    # Convert to JSON serializable format
+    rgb_pixels = [[[int(pixel[1]), int(pixel[2]), int(pixel[3])] for pixel in row] for row in image]
     plt.close(fig)
-    return (rgb_pixels,(maxtemp,mintemp))
+    return (rgb_pixels,(float(maxtemp),float(mintemp)))
 #result = simheat(test, airtemp=5,hot = False)
 #plt.imshow(result)
 #plt.axis('off')
