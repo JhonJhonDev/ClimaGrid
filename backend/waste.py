@@ -60,12 +60,12 @@ def ca_step(grid, waste, coeffs):
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
                     
-                 if grid[i][j]=='l' and neigh_type=='l' and delta[i][j] >= (50+delta[ni][nj]): # rule 7 trash in light density housing spreads if the difference in trash is large enough
+                if grid[i][j]=='l' and neigh_type=='l' and delta[i][j] >= (50+delta[ni][nj]): # rule 7 trash in light density housing spreads if the difference in trash is large enough
                     flow = initialwaste * coeffs['lighttrashspread']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
                      
-                 if grid[i][j]=='g' and neigh_type=='g': # rule 8 greenspace pollution slowly spreads
+                if grid[i][j]=='g' and neigh_type=='g': # rule 8 greenspace pollution slowly spreads
                     flow = initialwaste * coeffs['landdiffusion']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
