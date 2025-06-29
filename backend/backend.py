@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from heat import simheat
 from energy import calculate_energy_usage
+from waste import run_ca_final 
+from waste import ca_step 
+from waste import wastemaker 
 import random
 import math
 import xarray as xr
@@ -58,15 +61,17 @@ def evaluate():
         # Calculate energy usage heatmap and statistics
         energy_heatmap, energy_stats = calculate_energy_usage(flat)
         print(airtemp)
-        
+        pollution = run_ca_final(flat,flatsim[2]) 
         return jsonify({
             "message": "True",
-            "score": evaluation.get('score') if evaluation else None,
+            "score": 2,
             "orgmap" : flat,
             "heatmap": flatsim[0],
             "heattemps":flatsim[1],
             "energy_heatmap": energy_heatmap,
-            "energy_stats": energy_stats
+            "energy_stats": energy_stats,
+            "pollution_heatmap": pollution[0],
+            "pollution_stats": pollution[1].tolist()
         }), 200
         
     except Exception as e:

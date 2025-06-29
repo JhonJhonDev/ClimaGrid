@@ -7,7 +7,7 @@ def wastemaker(grid, temp,
                baseline_temp=15,
                normaltrashperson=1.2,
                temp_coeff=0.015):
-    trasharea = {'d':500, 'l':50, 'g':0, 'b':0} 
+    trasharea = {'d':500, 'l':50, 'g':0, 'b':0, 'empty':0} 
     R, C = len(grid), len(grid[0])
     waste = [[0.0]*C for _ in range(R)]
     

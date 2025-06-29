@@ -43,6 +43,7 @@ def simheat(grid, airtemp, steps=75, alpha=0.01, beta = 0.01, hot = True):
 
                 new_output[y, x] = center + alpha * laplacian - beta * (center - airtemp)
         output = new_output
+    tempoutput = output
     maxtemp = output.max()
     mintemp = output.min()
     difarray = np.full((height, width), airtemp, dtype=float)
@@ -65,8 +66,9 @@ def simheat(grid, airtemp, steps=75, alpha=0.01, beta = 0.01, hot = True):
     # Convert to JSON serializable format
     rgb_pixels = [[[int(pixel[1]), int(pixel[2]), int(pixel[3])] for pixel in row] for row in image]
     plt.close(fig)
-    return (rgb_pixels,(float(maxtemp),float(mintemp)))
+    return (rgb_pixels,(float(maxtemp),float(mintemp)),tempoutput)
 #result = simheat(test, airtemp=5,hot = False)
+#print( result[1])
 #plt.imshow(result)
 #plt.axis('off')
 #plt.title("Reconstructed RGB Image")
