@@ -19,6 +19,7 @@ class EmbedTime(nn.Module):
 
 
 class unet(nn.Module):
+    #this is the worst fucking thing I have ever done
     def __init__(self):
         super().__init__()
         self.relu  = nn.ReLU()

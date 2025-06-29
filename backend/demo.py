@@ -18,6 +18,7 @@ CHAR_TO_RGB = {
 
 @torch.no_grad()
 def sample(model, grid, img_size=128):
+    #this merges the garbage toghet
     x = torch.randn(1, 3, img_size, img_size, device=device)
     grid_h = len(grid)
     grid_w = len(grid[0]) if grid_h > 0 else 0
@@ -37,6 +38,7 @@ def sample(model, grid, img_size=128):
         x[:, :, 0 : grid_h * cell_h, 0 : grid_w * cell_w] = grid_tensor
 
     for t in tqdm(reversed(range(T)), desc="Sampling"):
+        #crazy math stuff to undo the noise
         t_batch = torch.full((1,), t, device=device, dtype=torch.long)
         noise_pred = model(x, t_batch)
         sqrt_acp = get_index_from_list(sqrt_alphas_cumprod, t_batch, x.shape)

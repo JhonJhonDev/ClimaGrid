@@ -172,11 +172,9 @@ export default function ResultsPage() {
       content.type = 'Energy Usage';
       content.color = cell.color;
       
-      // Calculate energy value based on original grid type
       if (orgGrid[row] && orgGrid[row][col]) {
         const originalType = orgGrid[row][col].type;
-        // Updated energy values based on real-world demand (kWh·m⁻²·yr⁻¹)
-        const cellArea = 100; // m²
+        const cellArea = 100;
         const energyDemandPerM2PerYear: Record<string, number> = {
           'l': 60.0,   // Low-rise housing
           'd': 160.0,  // High-rise/commercial
@@ -187,7 +185,6 @@ export default function ResultsPage() {
         
         let baseEnergyPerDay = (energyDemandPerM2PerYear[originalType] || 0) * cellArea / 365.0;
         
-        // Check for neighborhood surcharge (2-cell radius)
         let highDensityNeighbors = 0;
         let totalNeighbors = 0;
         
@@ -397,8 +394,6 @@ export default function ResultsPage() {
                 boxSizing: 'border-box',
                 cursor: 'pointer'
             }}
-              onMouseEnter={(e) => handleCellHover(e, idx, 'pollution')}
-              onMouseLeave={handleCellLeave}
           />
         ))}
         </div>
