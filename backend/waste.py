@@ -55,6 +55,11 @@ def ca_step(grid, waste, coeffs):
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
 
+                if grid[i][j]=='b' and neigh_type=='b': # rule 6 water diffusion as trash evenly spreads across a distance in the water
+                    flow = initialwaste * coeffs['waterdiffusion']
+                    delta[i][j]   -= flow
+                    delta[ni][nj] += flow
+
     new_waste = [[waste[i][j] + delta[i][j] for j in range(column)]
                  for i in range(row)] # updates list
     return new_waste
@@ -65,7 +70,7 @@ def run_ca_final(grid, temp, steps=10):
         'housingrunoff': 0.05,
         'litter': 0.05,
         'greenspacerunoff': 0.10,
-        'watertrashbuildup': 0.01
+        'watertrashbuildup': 0.01, 'waterdiffusion': 0.05
     }
     w = wastemaker(grid, temp)
     for _ in range(steps):
