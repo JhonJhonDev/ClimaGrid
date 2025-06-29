@@ -28,7 +28,7 @@ def ca_step(grid, waste, coeffs):
                 if not (0 <= ni < row and 0 <= nj < column): continue # check for edge cases 
                 neigh_type = grid[ni][nj]
                 
-                if grid[i][j]=='d' and neigh_type=='l': #rule 1 trash overflow from high densiy areas pollutes low density housing
+                if grid[i][j]=='d' and neigh_type=='l' and delta[i][j]>=(100+delta[ni,nj]): #rule 1 trash overflow from high densiy areas pollutes low density housing if difference is great enough.
                     diff = initialwaste - waste[ni][nj]
                     if diff>0:
                         flow = diff * coeffs['overflow']
@@ -59,6 +59,16 @@ def ca_step(grid, waste, coeffs):
                     flow = initialwaste * coeffs['waterdiffusion']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
+                    
+                 if grid[i][j]=='l' and neigh_type=='l' and delta[i][j] >= (50+delta[ni][nj]): # rule 7 trash in light density housing spreads if the difference in trash is large enough
+                    flow = initialwaste * coeffs['lighttrashspread']
+                    delta[i][j]   -= flow
+                    delta[ni][nj] += flow
+                     
+                 if grid[i][j]=='g' and neigh_type=='g': # rule 8 greenspace pollution slowly spreads
+                    flow = initialwaste * coeffs['landdiffusion']
+                    delta[i][j]   -= flow
+                    delta[ni][nj] += flow
 
     new_waste = [[waste[i][j] + delta[i][j] for j in range(column)]
                  for i in range(row)] # updates list
@@ -70,7 +80,7 @@ def run_ca_final(grid, temp, steps=10):
         'housingrunoff': 0.05,
         'litter': 0.05,
         'greenspacerunoff': 0.10,
-        'watertrashbuildup': 0.01, 'waterdiffusion': 0.05
+        'watertrashbuildup': 0.01, 'waterdiffusion': 0.05, 'lighttrashspread':0.01, 'landdiffusion':0.005
     }
     w = wastemaker(grid, temp)
     for _ in range(steps):
