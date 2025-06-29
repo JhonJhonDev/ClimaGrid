@@ -28,7 +28,7 @@ def ca_step(grid, waste, coeffs):
                 if not (0 <= ni < row and 0 <= nj < column): continue # check for edge cases 
                 neigh_type = grid[ni][nj]
                 
-                if grid[i][j]=='d' and neigh_type=='l' and delta[i][j]>=(100+delta[ni,nj]): #rule 1 trash overflow from high densiy areas pollutes low density housing if difference is great enough.
+                if grid[i][j]=='d' and neigh_type=='l' and delta[i][j]>=(100+delta[ni][nj]): #rule 1 trash overflow from high densiy areas pollutes low density housing if difference is great enough.
                     diff = initialwaste - waste[ni][nj]
                     if diff>0:
                         flow = diff * coeffs['overflow']
@@ -78,9 +78,9 @@ def run_ca_final(grid, temp, steps=10):
     coeffs = {
         'overflow': 0.1,
         'housingrunoff': 0.05,
-        'litter': 0.05,
+        'litter': 0.03,
         'greenspacerunoff': 0.10,
-        'watertrashbuildup': 0.01, 'waterdiffusion': 0.05, 'lighttrashspread':0.01, 'landdiffusion':0.005
+        'watertrashbuildup': 0.01, 'waterdiffusion': 0.1, 'lighttrashspread':0.01, 'landdiffusion':0.01
     }
     w = wastemaker(grid, temp)
     for _ in range(steps):
