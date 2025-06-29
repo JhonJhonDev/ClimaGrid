@@ -258,7 +258,7 @@ const Builder: React.FC = () => {
                 <button
                   key={colorOption.name}
                   className={`color-button ${selectedColor.name === colorOption.name ? 'active' : ''}`}
-                  style={{ '--tool-color': colorOption.color }}
+                  style={{ '--tool-color': colorOption.color } as React.CSSProperties & Record<string, string>}
                   onClick={() => setSelectedColor(colorOption)}
                   title={colorOption.name}
                 >
