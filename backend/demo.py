@@ -5,12 +5,14 @@ import numpy as np
 from tqdm import tqdm
 from model import unet
 from scheduler import *
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
+#device = "cuda" if torch.cuda.is_available() else "cpu"
+
+#model = unet().to(device)
+#model.load_state_dict(torch.load("model.pth", map_location=device))
+#model.eval()
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
-model = unet().to(device)
-model.load_state_dict(torch.load("model.pth", map_location=device))
-model.eval()
 
 @torch.no_grad()
 def sample(model, img_size=128):
@@ -36,14 +38,25 @@ def sample(model, img_size=128):
         else:
             x = posterior_mean
 
-    return x
+    x = (x.clamp(-1, 1) + 1) * 0.5
+    x = np.transpose(x[0].cpu().numpy(),(1,2,0))
+    fig, ax = plt.subplots()
+    height, width = [128,128]
+    fig = plt.figure(figsize=(width / 100, height / 100), dpi=100)
+    ax = fig.add_axes([0, 0, 1, 1]) 
+    ax.imshow(x) 
+    # add here
+    ax.axis('off') 
+    canvas = FigureCanvas(fig)
+    canvas.draw()
+    image = np.frombuffer(canvas.tostring_argb(), dtype=np.uint8).reshape((height, width, 4))
+    # Convert to JSON serializable format
+    rgb_pixels = [[[int(pixel[1]), int(pixel[2]), int(pixel[3])] for pixel in row] for row in image]
+    plt.close(fig)
+    return (rgb_pixels)
+#result = sample(model)
 
-sampled = sample(model, img_size=128)
-
-sampled = (sampled.clamp(-1, 1) + 1) * 0.5
-
-save_image(sampled, "generated.png")
-plt.imshow(np.transpose(sampled[0].cpu().numpy(), (1,2,0)))
-plt.axis("off")
-plt.title("DDPM Sample")
-plt.show()
+#plt.imshow(result)
+#plt.axis("off")
+#plt.title("DDPM Sample")
+#plt.show()

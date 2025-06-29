@@ -38,7 +38,7 @@ def forward_diffusion_sample(x_0, t, device="cpu"):
 T = 1000
 betas = cosine_beta_schedule(timesteps=T)  # Use cosine scheduler instead of linear
 
-# Pre-calculate different terms for closed form (UNCHANGED FROM ORIGINAL)
+# Pre-calculate different terms for closed form
 alphas = 1. - betas
 alphas_cumprod = torch.cumprod(alphas, axis=0)
 alphas_cumprod_prev = F.pad(alphas_cumprod[:-1], (1, 0), value=1.0)

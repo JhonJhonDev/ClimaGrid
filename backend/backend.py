@@ -10,6 +10,15 @@ import math
 import xarray as xr
 import numpy as np
 import pandas as pd
+import torch
+from model import unet
+from demo import sample
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+
+model = unet().to(device)
+model.load_state_dict(torch.load("model.pth", map_location=device))
+model.eval()
 
 app = Flask(__name__)
 CORS(app)
@@ -60,6 +69,7 @@ def evaluate():
         
         # Calculate energy usage heatmap and statistics
         energy_heatmap, energy_stats = calculate_energy_usage(flat)
+        difresult = sample(model)
         print(airtemp)
         pollution = run_ca_final(flat,flatsim[2]) 
         return jsonify({
@@ -72,7 +82,8 @@ def evaluate():
             "energy_heatmap": energy_heatmap,
             "energy_stats": energy_stats,
             "pollution_heatmap": pollution[0],
-            "pollution_stats": pollution[1].tolist()
+            "pollution_stats": pollution[1].tolist(),
+            "diffusionresult":difresult
         }), 200
         
     except Exception as e:

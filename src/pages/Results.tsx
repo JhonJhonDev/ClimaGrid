@@ -26,6 +26,7 @@ export default function ResultsPage() {
   const energy_stats = state?.energy_stats;
   const pollution_heatmap = state?.pollution_heatmap;
   const pollution_stats = state?.pollution_stats;
+  const difresult = state?.diffusionresult;
   const heattemps = state?.heattemps;
   const gridSize = heatmap?.length || 32;
   const cellSize = 20;
@@ -43,6 +44,12 @@ export default function ResultsPage() {
   const [grid, setGrid] = useState<GridCell[][]>(() =>
     Array(gridSize).fill(null).map(() =>
       Array(gridSize).fill(null).map(() => ({ color: '#1f2937', type: 'empty' }))
+     )
+  );
+  const difmap = state?.diffusionresult;
+  const [difGrid, setDifGrid] = useState<GridCell[][]>(() =>
+    Array(128).fill(null).map(() =>
+      Array(128).fill(null).map(() => ({ color: '#1f2937', type: 'empty' }))
      )
   );
 
@@ -101,6 +108,18 @@ export default function ResultsPage() {
       );
       setEnergyGrid(newEnergyGrid);
     }
+    if (difmap) {
+      const newDifGrid = difmap.map((row: number[][]) =>
+        row.map((rgb: number[]) => {
+          const hex = `#${rgb.map(v => v.toString(16).padStart(2, '0')).join('')}`;
+          return {
+            color: hex,
+            type: 'dif'
+          };
+        })
+      );
+      setDifGrid(newDifGrid);
+    }
 
     if (orgmap) {
       const newOrgGrid = orgmap.map((row: string[]) =>
@@ -111,7 +130,7 @@ export default function ResultsPage() {
       );
       setOrgGrid(newOrgGrid);
     }
-  }, [heatmap, energy_heatmap, orgmap, pollution_heatmap]);
+  }, [heatmap, energy_heatmap, orgmap, pollution_heatmap, difmap]);
   
   // Tooltip handlers
   const handleCellHover = (event: React.MouseEvent, cellIndex: number, mapType: 'original' | 'temperature' | 'energy' | 'pollution') => {
@@ -338,6 +357,37 @@ export default function ResultsPage() {
           }}
         >
           {pollutionGrid.flat().map((cell, idx) => (
+            <div
+              key={idx}
+              style={{
+                width: '100%',
+                aspectRatio: '1 / 1',
+                backgroundColor: cell.color,
+                boxSizing: 'border-box',
+                cursor: 'pointer'
+            }}
+              onMouseEnter={(e) => handleCellHover(e, idx, 'pollution')}
+              onMouseLeave={handleCellLeave}
+          />
+        ))}
+        </div>
+      </div>
+
+      <div>
+        <h2 style={{ color: '#ccc', textAlign: 'center' }}>Your projected aerial view</h2>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${128}, 1fr)`,
+            aspectRatio: '1 / 1',
+            width: '100%',
+            maxWidth: '400px',
+            gap: '0px',
+            border: '2px solid #333',
+            borderRadius: '8px'
+          }}
+        >
+          {difGrid.flat().map((cell, idx) => (
             <div
               key={idx}
               style={{
