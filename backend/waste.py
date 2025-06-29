@@ -28,7 +28,7 @@ def ca_step(grid, waste, coeffs):
                 if not (0 <= ni < row and 0 <= nj < column): continue # check for edge cases 
                 neigh_type = grid[ni][nj]
                 
-                if grid[i][j]=='d' and neigh_type=='l' and delta[i][j]>=100+delta[ni][nj]: #rule 1 trash overflow from high densiy areas pollutes low density housing if difference is great enough.
+                if grid[i][j]=='d' and neigh_type=='l' and delta[i][j]>=(100+delta[ni][nj]): #rule 1 trash overflow from high densiy areas pollutes low density housing if difference is great enough.
                     diff = initialwaste - waste[ni][nj]
                     if diff>0:
                         flow = diff * coeffs['overflow']
@@ -40,12 +40,12 @@ def ca_step(grid, waste, coeffs):
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
                 
-                if grid[i][j] in ('d','l') and neigh_type=='g' and delta[i][j] >= (35+delta[ni][nj]): #rule 3 housing to pollute nearby greenspace due to litter, landfills, etc.
+                if grid[i][j] in ('d','l') and neigh_type=='g': #rule 3 housing to pollute nearby greenspace due to litter, landfills, etc.
                     flow = initialwaste * coeffs['litter']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
                 
-                if grid[i][j]=='g' and neigh_type=='b' and delta[i][j] >= (20+delta[ni][nj]): # rule 4 runoff to bring green space pollution into waterways
+                if grid[i][j]=='g' and neigh_type=='b': # rule 4 runoff to bring green space pollution into waterways
                     flow = initialwaste * coeffs['greenspacerunoff']
                     delta[i][j]   -= flow
                     delta[ni][nj] += flow
@@ -77,10 +77,10 @@ def ca_step(grid, waste, coeffs):
 def run_ca_final(grid, temp, steps=10):
     coeffs = {
         'overflow': 0.1,
-        'housingrunoff': 0.03,
+        'housingrunoff': 0.05,
         'litter': 0.03,
         'greenspacerunoff': 0.10,
-        'watertrashbuildup': 0.03, 'waterdiffusion': 0.1, 'lighttrashspread':0.01, 'landdiffusion':0.01
+        'watertrashbuildup': 0.01, 'waterdiffusion': 0.1, 'lighttrashspread':0.01, 'landdiffusion':0.01
     }
     w = wastemaker(grid, temp)
     for _ in range(steps):
@@ -119,4 +119,3 @@ temperature = [
 #plt.axis('off')
 #plt.title("roweconstructed rowGB Image")
 #plt.show()
-
