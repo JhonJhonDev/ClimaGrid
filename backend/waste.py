@@ -99,23 +99,16 @@ waste_arr = np.array(final_waste)
 cmap = plt.get_cmap('YlOrBr')
 
 fig, ax = plt.subplots(figsize=(6, 4))
+ax.axis('off')
 cax = ax.imshow(waste_arr,
                 cmap=cmap,
-                interpolation='nearest',
-                origin='upper')
-ax.set_title('Pollution per Cell after 10 Steps')
-ax.set_xlabel('Column index')
-ax.set_ylabel('Row index')
+                interpolation='nearest')
+
 
 # labels
-for (i, j), val in np.ndenumerate(waste_arr):
-    ax.text(j, i, f"{val:.1f}",
-            ha='center', va='center',
-            color='white' if val > waste_arr.mean() else 'black',
-            fontsize=6)
+
 
 # colorssssss
-fig.colorbar(cax, label='kg of waste')
 
 plt.tight_layout()
 plt.show()
