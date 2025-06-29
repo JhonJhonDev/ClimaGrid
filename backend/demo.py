@@ -7,16 +7,35 @@ from model import unet
 from scheduler import *
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-#device = "cuda" if torch.cuda.is_available() else "cpu"
-
-#model = unet().to(device)
-#model.load_state_dict(torch.load("model.pth", map_location=device))
-#model.eval()
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
+CHAR_TO_RGB = {
+    "b": (0.0,   0.0,   1.0),    # blue
+    "l": (0.82,  0.83,  0.84),   # light gray
+    "d": (0.29,  0.34,  0.39),   # dark gray
+    "g": (0.0,   1.0,   0.0),    # green
+}
+
 @torch.no_grad()
-def sample(model, img_size=128):
+def sample(model, grid, img_size=128):
     x = torch.randn(1, 3, img_size, img_size, device=device)
+    grid_h = len(grid)
+    grid_w = len(grid[0]) if grid_h > 0 else 0
+    if grid_h > 0 and grid_w > 0:
+        cell_h = img_size // grid_h
+        cell_w = img_size // grid_w
+        grid_tensor = torch.zeros(3, grid_h * cell_h, grid_w * cell_w, device=device)
+        for i in range(grid_h):
+            for j in range(grid_w):
+                ch = grid[i][j]
+                color = CHAR_TO_RGB.get(ch, (1.0, 0.0, 0.0))  # fallback red
+                c = torch.tensor(color, dtype=torch.float32, device=device) * 2 - 1
+                y0, y1 = i * cell_h, (i + 1) * cell_h
+                x0, x1 = j * cell_w, (j + 1) * cell_w
+                grid_tensor[:, y0:y1, x0:x1] = c.view(3, 1, 1)
+
+        x[:, :, 0 : grid_h * cell_h, 0 : grid_w * cell_w] = grid_tensor
+
     for t in tqdm(reversed(range(T)), desc="Sampling"):
         t_batch = torch.full((1,), t, device=device, dtype=torch.long)
         noise_pred = model(x, t_batch)
@@ -39,24 +58,17 @@ def sample(model, img_size=128):
             x = posterior_mean
 
     x = (x.clamp(-1, 1) + 1) * 0.5
-    x = np.transpose(x[0].cpu().numpy(),(1,2,0))
-    fig, ax = plt.subplots()
-    height, width = [128,128]
+    canvas_img = np.transpose(x[0].cpu().numpy(), (1, 2, 0))
+
+    height, width = img_size, img_size
     fig = plt.figure(figsize=(width / 100, height / 100), dpi=100)
-    ax = fig.add_axes([0, 0, 1, 1]) 
-    ax.imshow(x) 
-    # add here
-    ax.axis('off') 
+    ax = fig.add_axes([0, 0, 1, 1])
+    ax.imshow(canvas_img)
+    ax.axis('off')
     canvas = FigureCanvas(fig)
     canvas.draw()
     image = np.frombuffer(canvas.tostring_argb(), dtype=np.uint8).reshape((height, width, 4))
-    # Convert to JSON serializable format
     rgb_pixels = [[[int(pixel[1]), int(pixel[2]), int(pixel[3])] for pixel in row] for row in image]
     plt.close(fig)
-    return (rgb_pixels)
-#result = sample(model)
+    return rgb_pixels
 
-#plt.imshow(result)
-#plt.axis("off")
-#plt.title("DDPM Sample")
-#plt.show()

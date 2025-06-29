@@ -69,7 +69,7 @@ def evaluate():
         
         # Calculate energy usage heatmap and statistics
         energy_heatmap, energy_stats = calculate_energy_usage(flat)
-        difresult = sample(model)
+        difresult = sample(model,flat)
         print(airtemp)
         pollution = run_ca_final(flat,flatsim[2]) 
         return jsonify({
