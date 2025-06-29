@@ -68,6 +68,7 @@ def evaluate():
             "orgmap" : flat,
             "heatmap": flatsim[0],
             "heattemps":flatsim[1],
+            "heat_stats":flatsim[2].tolist(),
             "energy_heatmap": energy_heatmap,
             "energy_stats": energy_stats,
             "pollution_heatmap": pollution[0],

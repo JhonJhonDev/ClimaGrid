@@ -21,8 +21,11 @@ const colorFromType = (type: string) => {
 export default function ResultsPage() {
   const { state } = useLocation();
   const heatmap = state?.heatmap;
+  const heatstats = state?.heat_stats;
   const energy_heatmap = state?.energy_heatmap;
   const energy_stats = state?.energy_stats;
+  const pollution_heatmap = state?.pollution_heatmap;
+  const pollution_stats = state?.pollution_stats;
   const heattemps = state?.heattemps;
   const gridSize = heatmap?.length || 32;
   const cellSize = 20;
@@ -33,7 +36,7 @@ export default function ResultsPage() {
     x: number;
     y: number;
     content: any;
-    type: 'original' | 'temperature' | 'energy';
+    type: 'original' | 'temperature' | 'energy' | 'pollution';
   }>({ visible: false, x: 0, y: 0, content: null, type: 'original' });
 
   const orgmap = state?.orgmap;
@@ -55,6 +58,11 @@ export default function ResultsPage() {
     )
   );
 
+  const [pollutionGrid, setPollutionGrid] = useState<GridCell[][]>(() =>
+    Array(gridSize).fill(null).map(() =>
+    Array(gridSize).fill(null).map(() => ({ color: '#1f2937', type: 'empty' }))
+    )
+  );
   useEffect(() => {
     if (heatmap) {
       const newGrid = heatmap.map((row: number[][]) =>
@@ -67,6 +75,18 @@ export default function ResultsPage() {
         })
       );
       setGrid(newGrid);
+    }
+    if (pollution_heatmap) {
+      const newPollutionGrid = pollution_heatmap.map((row: number[][]) =>
+        row.map((rgb: number[]) => {
+          const hex = `#${rgb.map(v => v.toString(16).padStart(2, '0')).join('')}`;
+          return {
+            color: hex,
+            type: 'pollution'
+          };
+        })
+      );
+      setPollutionGrid(newPollutionGrid);
     }
 
     if (energy_heatmap) {
@@ -91,14 +111,13 @@ export default function ResultsPage() {
       );
       setOrgGrid(newOrgGrid);
     }
-  }, [heatmap, energy_heatmap, orgmap]);
+  }, [heatmap, energy_heatmap, orgmap, pollution_heatmap]);
   
   // Tooltip handlers
-  const handleCellHover = (event: React.MouseEvent, cellIndex: number, mapType: 'original' | 'temperature' | 'energy') => {
+  const handleCellHover = (event: React.MouseEvent, cellIndex: number, mapType: 'original' | 'temperature' | 'energy' | 'pollution') => {
     const rect = event.currentTarget.getBoundingClientRect();
     const row = Math.floor(cellIndex / gridSize);
     const col = cellIndex % gridSize;
-    
     let content = {
       row,
       col,
@@ -126,7 +145,7 @@ export default function ResultsPage() {
       if (heattemps) {
         const [maxTemp, minTemp] = heattemps;
         const tempRange = maxTemp - minTemp;
-        const normalizedTemp = minTemp + (tempRange * (row * gridSize + col) / (gridSize * gridSize));
+        const normalizedTemp = heatstats[row][col];
         content.value = `${normalizedTemp.toFixed(1)}°C`;
       }
     } else if (mapType === 'energy' && energyGrid[row] && energyGrid[row][col]) {
@@ -177,6 +196,14 @@ export default function ResultsPage() {
         content.neighborInfo = `${highDensityNeighbors}/${totalNeighbors} high-density neighbors`;
         content.hasSurcharge = hasSurcharge;
       }
+    }else if (mapType == 'pollution' && grid[row] && grid[row][col]){
+      const cell = pollutionGrid[row][col];
+      content.type = 'Pollution';
+      content.color = cell.color;
+      if (pollution_stats) {
+        content.value = `${pollution_stats[row][col].toFixed(1)}kg`;
+      }
+
     }
     
     setTooltip({
@@ -296,6 +323,36 @@ export default function ResultsPage() {
         ))}
         </div>
       </div>
+      <div>
+        <h2 style={{ color: '#ccc', textAlign: 'center' }}>Pollution Heatmap</h2>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
+            aspectRatio: '1 / 1',
+            width: '100%',
+            maxWidth: '400px',
+            gap: '0px',
+            border: '2px solid #333',
+            borderRadius: '8px'
+          }}
+        >
+          {pollutionGrid.flat().map((cell, idx) => (
+            <div
+              key={idx}
+              style={{
+                width: '100%',
+                aspectRatio: '1 / 1',
+                backgroundColor: cell.color,
+                boxSizing: 'border-box',
+                cursor: 'pointer'
+            }}
+              onMouseEnter={(e) => handleCellHover(e, idx, 'pollution')}
+              onMouseLeave={handleCellLeave}
+          />
+        ))}
+        </div>
+      </div>
       
       {energy_heatmap && (
         <div>
@@ -356,7 +413,11 @@ export default function ResultsPage() {
         }}
       >
         <div style={{ marginBottom: '8px', fontWeight: 'bold', color: tooltip.type === 'energy' ? '#ffd700' : tooltip.type === 'temperature' ? '#ff6b6b' : '#4ecdc4' }}>
-          {tooltip.type === 'original' ? '🏗️ Original Map' : tooltip.type === 'temperature' ? '🌡️ Temperature' : '⚡ Energy Usage'}
+            {tooltip.type === 'original' ? '🏗️ Original Map'
+             : tooltip.type === 'temperature' ? '🌡️ Temperature'
+             : tooltip.type === 'energy' ? '⚡ Energy Usage'
+             : '☁️ Pollution Amount'
+            }
         </div>
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '8px' }}>
           <div
