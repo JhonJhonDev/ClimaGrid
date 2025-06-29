@@ -27,7 +27,6 @@ const About: React.FC = () => {
           <div className="about-team">
             <h2>The Team</h2>
             <p>Our team is composed of visionary urban planners, data scientists, and software engineers dedicated to making a difference. We believe in the power of technology to solve real-world problems and are passionate about creating a sustainable future for all.</p>
-            <p className="team-names">Georgiy Derkachev &middot; <span className="glowing-text">Pradeep (Tree Hogger)</span> &middot; &middot;</p>
           </div>
         </div>
       </main>
