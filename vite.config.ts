@@ -4,4 +4,15 @@ import react from '@vitejs/plugin-react'
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    cors: {
+      origin: 'https://sturdycanoe-1015339393080.northamerica-northeast2.run.app',
+    },
+  },
+  build: {
+    manifest: true,
+    rollupOptions: {
+      input: 'src/main.jsx', // Change this to your actual main entry file
+    },
+  },
 })
