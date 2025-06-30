@@ -154,7 +154,7 @@ const Builder: React.FC = () => {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/evaluate', {
+      const response = await fetch('https://sturdycanoe-1015339393080.northamerica-northeast2.run.app/api/evaluate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
