@@ -11,8 +11,5 @@ export default defineConfig({
   },
   build: {
     manifest: true,
-    rollupOptions: {
-      input: 'src/main.jsx', // Change this to your actual main entry file
-    },
   },
 })
