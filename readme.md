@@ -1,3 +1,9 @@
+Name and School: Georgiy Derkachev, Lakshya Dhakar, Neil Mehra, Advik Vatsyayan
+ – McNair academic Highschool Date: 07/10/26 
+Category: Sustainability - GreenSpan Urban Development
+Project Name: ClimaGrid 
+Description: A website to help urban planners mock up quick designs and stress test them under real intense conditions.
+
 # 🌍 ClimaGrid
 
 ClimaGrid aims to address the challenge of **scaling critical infrastructure systems**—such as water, energy, and waste—in the context of a **net-zero city**, while preserving the **livability and sustainability** of that city.
