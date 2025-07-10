@@ -154,7 +154,7 @@ const Builder: React.FC = () => {
     };
 
     try {
-      const response = await fetch('https://34.21.29.39:5000/', {
+      const response = await fetch('https://34.21.29.39:5000/api/evaluate', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
